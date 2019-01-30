@@ -1,0 +1,209 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+
+
+<meta content="stuff, to, help, search, engines, not" name="keywords">
+<meta content="What this page is about." name="description">
+<meta content="Display Webcam Stream" name="title">
+<title>Display Webcam Stream</title>
+
+<style>
+#container {
+    margin: 0px auto;
+    width: 500px;
+    height: 375px;
+    border: 10px #333 solid;
+}
+#video {
+    width: 500;
+    height: 375px;
+    background-color: #666;
+		transform: rotateY(180deg);
+}
+
+#canvasContainer{
+		margin: 0px auto;
+	    width: 500px;
+	    height: 375px;
+	    border: 10px #333 solid;
+			transform: rotateY(180deg);
+
+}
+</style>
+</head>
+
+<body>
+
+
+
+
+<div id="container">
+    <video autoplay="true" id="video" ></video>
+</div>
+<div id="canvasContainer" hidden>
+    <canvas id="canvas" width="500" height="375"></canvas>
+</div>
+<div id="canvasContainer">
+    <canvas id="canvas2" width="500" height="375"></canvas>
+</div>
+
+
+
+<script>
+
+	var cWidth = 500;
+	var cHeight = 375;
+
+
+(function() {
+	var canvas = document.getElementById('canvas'),
+	context = canvas.getContext('2d'),
+	canvas2 = document.getElementById('canvas2'),
+	context2 = canvas2.getContext('2d'),
+	video = document.getElementById('video'),
+	vendorUrl = window.URL || window.webkitURL;
+
+	navigator.getMedia = 	navigator.getUserMedia;
+
+	navigator.getMedia({
+		video:true,
+		audio:false,
+
+
+	}, function(stream){
+		video.srcObject = stream;
+		video.play();
+	}, function(error){
+		//Error occured
+	});
+
+	video.onloadedmetadata = function() {
+		console.log('width is', this.videoWidth);
+		console.log('height is', this.videoHeight);
+	};
+
+	video.addEventListener('play',function(){
+		draw(this, context, cWidth, cHeight,0);
+
+	}, false);
+
+	function drawTwo(video, context, width, height,count){
+		count +=2;
+		count = count % 375;
+
+		context.drawImage(   video, 0, 0,  500, 375);
+		context2.drawImage(   canvas, 0, count,  500, 2,   0,  count, 500,  2);
+
+	}
+
+
+
+
+	function draw(video, context, width, height,count){
+		if(count == undefined || count >= cHeight){
+			count = 0;
+		}else{
+			count += 2;
+		}
+
+
+
+		context.drawImage(   video, 0, 0,  500, 375);
+
+		context2.drawImage(   canvas, 0, count,  500, 2,   0,  count, 500,  2);
+
+
+
+		window.requestAnimationFrame(function(){
+			draw(video, context, 500, 375,count);
+			//drawTwo(video, context, 500, 375,count+187);
+		});
+		//	setTimeout(draw,0.1 , video, context, 500, 375,count);
+		//	setTimeout(drawTwo,1 , video, context, 500, 375,count+100);
+		//	setTimeout(drawTwo,1 , video, context, 500, 375,count+200);
+		//	setTimeout(drawTwo,1 , video, context, 500, 375,count+300);
+		//	setTimeout(drawTwo,1 , video, context, 500, 375,count+400);
+			//	draw(video, context, 500, 375,count);
+
+
+		//setTimeout(draw,2 , video, context, 500, 375,count);
+
+	}
+
+})();
+
+
+
+
+
+
+/*
+var video = document.querySelector("#videoElement");
+
+if (navigator.mediaDevices.getUserMedia) {
+		navigator.mediaDevices.getUserMedia({video: true})
+	.then(function(stream) {
+		video.srcObject = stream;
+		tryRender();
+	})
+	.catch(function(error) {
+		console.log("Something went wrong!");
+	});
+}
+function tryRender(){
+let processor = {
+    timerCallback: function() {
+      if (this.video.paused || this.video.ended) {
+        return;
+      }
+      this.computeFrame();
+      let self = this;
+      setTimeout(function () {
+          self.timerCallback();
+        }, 0);
+    },
+
+    doLoad: function() {
+      this.video = document.getElementById("video");
+      this.c1 = document.getElementById("c1");
+      this.ctx1 = this.c1.getContext("2d");
+      this.c2 = document.getElementById("c2");
+      this.ctx2 = this.c2.getContext("2d");
+      let self = this;
+      this.video.addEventListener("play", function() {
+          self.width = self.video.videoWidth / 2;
+          self.height = self.video.videoHeight / 2;
+          self.timerCallback();
+        }, false);
+    },
+
+    computeFrame: function() {
+      this.ctx1.drawImage(this.video, 0, 0, this.width, this.height);
+      let frame = this.ctx1.getImageData(0, 0, this.width, this.height);
+          let l = frame.data.length / 4;
+
+      for (let i = 0; i < l; i++) {
+        let r = frame.data[i * 4 + 0];
+        let g = frame.data[i * 4 + 1];
+        let b = frame.data[i * 4 + 2];
+        if (g > 100 && r > 100 && b < 43)
+          frame.data[i * 4 + 3] = 0;
+      }
+      this.ctx2.putImageData(frame, 0, 0);
+      return;
+    }
+  };
+
+document.addEventListener("DOMContentLoaded", () => {
+  processor.doLoad();
+});
+}
+
+
+*/
+
+</script>
+
+</body>
+</html>
